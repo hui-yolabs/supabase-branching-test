@@ -1,4 +1,4 @@
-name: Deploy app (${{ github.ref_name }})
+name: Deploy app 
 run-name: Deploy (${{ github.ref_name }}) # shows branch/tag in the run title
 
 permissions:
