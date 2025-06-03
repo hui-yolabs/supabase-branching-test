@@ -1,0 +1,36 @@
+name: Deploy app (${{ github.ref_name }})
+run-name: Deploy (${{ github.ref_name }}) # shows branch/tag in the run title
+
+permissions:
+  contents: write
+  pull-requests: write
+
+on:
+  push:
+    tags:
+      - 'staging-*'
+      - 'df-*'
+jobs:    
+  trigger-codemagic-build:
+    name: Build Mobile app
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Determine environment
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/staging-* ]]; then
+            echo "ENV=staging" >> $GITHUB_ENV
+          elif [[ "${{ github.ref }}" == refs/tags/df-* ]]; then
+            echo "ENV=dogfood" >> $GITHUB_ENV
+          else
+            echo "ENV=${{ github.event.inputs.env }}" >> $GITHUB_ENV
+          fi
+
+      - name: Pick Codemagic workflow
+        run: |
+          if [ "${{ env.ENV }}" = "staging" ]; then
+            echo "staging"
+          else
+            echo "df"
+          fi
